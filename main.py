@@ -16,7 +16,10 @@ def create_child(name: str, score: int, postcode: str, id: str):
 
 
 def save_json():
-    json.dump(child_database, child_database_file)
+    data = json.dumps(child_database)
+    child_database_file = open(child_database_filename, "w", encoding="utf8")
+    child_database_file.write(data)
+    child_database_file.close()
 
 
 def register_new_child():
@@ -34,6 +37,8 @@ def register_new_child():
     child = ask_for_data()
     child_database.append(child)
     save_json()
+    print(f"Added a child called {child['name']}")
+    print()
 
 
 child_database_filename = "children.json"
@@ -42,11 +47,12 @@ child_database_filename = "children.json"
 child_database_file_read = open(child_database_filename, "r", encoding="utf8")
 child_database: list = json.load(child_database_file_read)
 child_database_file_read.close()
-# Open the database file for writing:
-child_database_file = open(child_database_filename, "w", encoding="utf8")
+
 
 # TODO: Get menu system from Replit
+print("Welcome to the Christmas Naughty or Nice tool!")
+print()
 register_new_child()
 
 # Program shutdown
-child_database_file.close()
+print("Exiting!")

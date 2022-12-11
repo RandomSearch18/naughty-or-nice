@@ -109,7 +109,7 @@ argument-naming-style=snake_case
 # Regular expression matching correct argument names. Overrides argument-
 # naming-style. If left empty, argument names will be checked with the set
 # naming style.
-#argument-rgx=
+argument-rgx=^[a-z][a-z0-9]*((_[a-z0-9]+)*)?$
 
 # Naming style matching correct attribute names.
 attr-naming-style=snake_case
@@ -155,7 +155,7 @@ class-naming-style=PascalCase
 #class-rgx=
 
 # Naming style matching correct constant names.
-const-naming-style=UPPER_CASE
+const-naming-style=any
 
 # Regular expression matching correct constant names. Overrides const-naming-
 # style. If left empty, constant names will be checked with the set naming
@@ -234,7 +234,7 @@ variable-naming-style=snake_case
 # Regular expression matching correct variable names. Overrides variable-
 # naming-style. If left empty, variable names will be checked with the set
 # naming style.
-#variable-rgx=
+variable-rgx=^[a-z][a-z0-9]*((_[a-z0-9]+)*)?$
 
 
 [CLASSES]
@@ -417,7 +417,8 @@ disable=raw-checker-failed,
         deprecated-pragma,
         use-symbolic-message-instead,
         missing-function-docstring,
-        missing-module-docstring
+        missing-module-docstring,
+        redefined-builtin,
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option

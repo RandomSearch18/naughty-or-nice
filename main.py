@@ -1,5 +1,6 @@
 import json
 import random
+from menu import create_menu
 
 
 def generate_id(bits=64):
@@ -7,12 +8,7 @@ def generate_id(bits=64):
 
 
 def create_child(name: str, score: int, postcode: str, id: str):
-    return {
-        "name": name,
-        "score": score,
-        "postcode": postcode,
-        "id": id
-    }
+    return {"name": name, "score": score, "postcode": postcode, "id": id}
 
 
 def save_json():
@@ -49,10 +45,13 @@ child_database: list = json.load(child_database_file_read)
 child_database_file_read.close()
 
 
-# TODO: Get menu system from Replit
 print("Welcome to the Christmas Naughty or Nice tool!")
 print()
-register_new_child()
+
+# Main menu
+add_option, show_menu = create_menu("Christmas Naughty or Nice")
+add_option("Add a child", register_new_child)
+show_menu()
 
 # Program shutdown
-print("Exiting!")
+print("Goodbye!")

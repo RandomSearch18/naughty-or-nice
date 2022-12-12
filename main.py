@@ -3,16 +3,12 @@ import random
 
 
 def generate_id(bits=64):
-    return random.randint(0, 2**bits)
+    random_int = random.randint(0, 2**bits)
+    return hex(random_int)
 
 
 def create_child(name: str, score: int, postcode: str, id: str):
-    return {
-        "name": name,
-        "score": score,
-        "postcode": postcode,
-        "id": id
-    }
+    return {"name": name, "score": score, "postcode": postcode, "id": id}
 
 
 def save_json():

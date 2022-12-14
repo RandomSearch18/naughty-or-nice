@@ -2,6 +2,7 @@ import json
 import random
 from menu import create_menu, color_wrap, COLOR_RED
 import sys
+import inputs
 
 
 def generate_id(bits=64):
@@ -30,10 +31,9 @@ def write_naughty_and_nice_lists():
 
 def register_new_child():
     def ask_for_data():
-        # TODO: Use input helpers from Replit
-        name = input("Name: ")
-        postcode = input("Postcode: ")
-        score = int(input("Total score: "))
+        name = inputs.text("Name: ")
+        postcode = inputs.text("Postcode: ")  # TODO: Use postcode input helper
+        score = inputs.integer("Total score: ")
 
         id = generate_id()
         return create_child(name, score, postcode, id)

@@ -1,6 +1,6 @@
 def is_int(string: str):
     try:
-        integer(string)
+        int(string)
         return True
     except:
         return False

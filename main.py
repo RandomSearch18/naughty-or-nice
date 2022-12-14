@@ -1,6 +1,6 @@
 import json
 import random
-from menu import create_menu
+from menu import create_menu, color_wrap, COLOR_RED
 
 
 def generate_id(bits=64):
@@ -40,11 +40,22 @@ def register_new_child():
 
 child_database_filename = "children.json"
 # Load the JSON database file:
-# TODO: Create the file if it doesn't exist
-child_database_file_read = open(child_database_filename, "r", encoding="utf8")
-child_database: list = json.load(child_database_file_read)
-child_database_file_read.close()
-
+try:
+    child_database_file_read = open(child_database_filename, "r", encoding="utf8")
+    child_database: list = json.load(child_database_file_read)
+    child_database_file_read.close()
+except FileNotFoundError:
+    child_database = []
+except json.decoder.JSONDecodeError:
+    # If the file is empty then just re-create an empty json file
+    child_database_file_read.seek(0)
+    file_is_empty = child_database_file_read.read(1) == ""
+    if file_is_empty:
+        child_database = []
+    else:
+       print(color_wrap("Child database is invalid!", COLOR_RED))
+       # TODO: Exit the program
+       child_database = []
 
 print("Welcome to the Christmas Naughty or Nice tool!")
 print()
@@ -56,3 +67,4 @@ show_menu()
 
 # Program shutdown
 print("Goodbye!")
+save_json()

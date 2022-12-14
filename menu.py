@@ -2,10 +2,14 @@ from inspect import signature
 
 # Terminal colour codes
 COLOR_RED = "\x1b[31m"
+COLOR_GREEN = "\x1b[32m"
 
 """Applies an ANSI colour code to a string"""
+
+
 def color_wrap(string, color):
     return f"{color}{string}\033[0m"
+
 
 def get_selection(max):
     try:
@@ -33,6 +37,8 @@ def get_selection(max):
 
 
 """System for creating a menu with multiple options that the user can pick from"""
+
+
 def create_menu(title=None):
     options = []
 
@@ -41,12 +47,15 @@ def create_menu(title=None):
     callback: The function to run when the user selects the option
     show: An optional function that can return False to prevent the option from being shown
     """
+
     def add_option(name, callback, show=None):
         options.append({"name": name, "callback": callback, "show": show})
 
     """Show the menu (once you've added all the options)"""
+
     def show_menu(loop=False):
         """Cleanup functions run once the menu item callback is done, i.e. if the function ends normally or if it's cancelled by the user with ^C. Useful for things like closing files."""
+
         def add_cleanup(cleanup):
             cleanups.append(cleanup)
 

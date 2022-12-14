@@ -1,7 +1,7 @@
 from io import TextIOWrapper
 import json
 import random
-from menu import create_menu, color_wrap, COLOR_RED
+from menu import create_menu, color_wrap, COLOR_RED, COLOR_GREEN
 import sys
 import inputs
 
@@ -9,6 +9,14 @@ import inputs
 FILE_CHILD_DATABASE = "children.json"
 FILE_NAUGHTY_LIST = "naughty_list.txt"
 FILE_NICE_LIST = "nice_list.txt"
+
+
+def print_error(*msg):
+    print(color_wrap(" ".join(msg), COLOR_RED))
+
+
+def print_success(*msg):
+    print(color_wrap(" ".join(msg), COLOR_GREEN))
 
 
 def generate_id(bits=64):
@@ -48,7 +56,7 @@ def rewrite_naughty_and_nice_lists():
         add_child_to_naughty_or_nice_list(child, naughty_list_file, nice_list_file)
         total_children += 1
 
-    print(f"Added {total_children} child(ren) to the naughty/nice lists")
+    print_success(f"Added {total_children} child(ren) to the naughty/nice lists")
     print()
 
 
@@ -67,9 +75,9 @@ def register_new_child():
     child_database.append(child)
     save_json()
     name = child["name"]
-    print(f"Added a child called {name}")
+    print_success(f"Added a child called {name}")
     output_file = add_child_to_naughty_or_nice_list(child)
-    print(f'Added "{name}" to {output_file.name}')
+    print_success(f'Added "{name}" to {output_file.name}')
     print()
 
 

@@ -19,6 +19,14 @@ def save_json():
     child_database_file.close()
 
 
+def write_naughty_and_nice_lists():
+    naughty_list_file = open("naughty_list.txt", "w", encoding="utf8")
+    nice_list_file = open("nice_list.txt", "w", encoding="utf8")
+
+    for child in child_database:
+        pass
+
+
 def register_new_child():
     def ask_for_data():
         # TODO: Use input helpers from Replit

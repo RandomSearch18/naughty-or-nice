@@ -298,13 +298,13 @@ def rule_split(*parts, join=" "):
 
 
 def add_street_rule(rule, street_rule):
-    full_rule = {"street": street_rule["area"], "area": rule["area"]}
+    full_rule = {"street": street_rule["area"], "area": rule and rule["area"]}
     return full_rule
 
 
-POSTCODE_RULES = {
+postcode_rules = {
     "AF": rule_numbers(4),
-    "AX": [rule_numbers(5), rule_numbers(5)],
+    "AX": [rule_numbers(5), rule_country_code_prefix(rule_numbers(5), sep="-")],
     "AL": rule_numbers(4),
     "DZ": rule_numbers(5),
     "AS": [rule_numbers(5), rule_split(rule_numbers(5), rule_numbers(4), join="-")],
@@ -325,7 +325,7 @@ POSTCODE_RULES = {
     "BD": rule_numbers(4),
     "BZ": None,
     "BJ": None,
-    # Bermuda is weird
+    # Bermuda is weird:
     "BM": add_street_rule(None, rule("\\d{4}|[A-Z]\\d{4}[a-zA-Z]{3}")),
     "BT": rule_numbers(5),
     "BO": None,
@@ -336,6 +336,42 @@ POSTCODE_RULES = {
     "IO": rule_single("BBND 1ZZ"),
     "VG": rule_country_code_prefix(rule_numbers(4)),
 }
+
+
+def normalise_postcode_rule(rule):
+    if rule == None:
+        return {
+            "area": [],
+            "street": [],
+        }
+
+    # If the rule is directly an list, move the list of formats to the `area` key
+    if isinstance(rule, list):
+        rule = {
+            "area": [rule["area"] for rule in rule],
+            "street": [],
+        }
+
+    # If either the `area` or `street` keys are missing, make them an empty array
+    # This also handles either key being `None`
+    if "area" not in rule or not rule["area"]:
+        rule["area"] = []
+    if "street" not in rule or not rule["street"]:
+        rule["street"] = []
+
+    # If rule["area"] or rule["street"] isn't a list, make it a single-item list
+    for postcode_type in rule:
+        format = rule[postcode_type]
+        if not isinstance(format, list):
+            rule[postcode_type] = [format]
+
+    return rule
+
+
+normalised_rules = {}
+for country in postcode_rules:
+    rule = postcode_rules[country]
+    normalised_rules[country] = normalise_postcode_rule(rule)
 
 
 def assert_valid_iso_code(code: str):

@@ -279,7 +279,7 @@ def rule_country_code_prefix(rule, sep=""):
         "area": {
             "type": "prefixed",
             "prefix_length": 2,
-            "prefix": rule_country_code(),
+            "prefix": rule_country_code()["area"],
             "main": rule,
             "sep": sep,
         }
@@ -388,8 +388,8 @@ def assert_valid_iso_code(code: str):
 
 
 # https://en.wikipedia.org/wiki/List_of_postal_codes
-def parse_postcode(country: str, postcode: str):
+def assert_valid_postcode(country: str, postcode: str):
     if not postcode:
         raise ValueError("Provided postcode is empty!")
 
-    assert_valid_iso_code(postcode)
+    assert_valid_iso_code(country)

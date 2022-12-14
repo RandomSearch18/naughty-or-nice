@@ -1,6 +1,7 @@
 import json
 import random
 from menu import create_menu, color_wrap, COLOR_RED
+import sys
 
 
 def generate_id(bits=64):
@@ -54,16 +55,17 @@ try:
     child_database_file_read.close()
 except FileNotFoundError:
     child_database = []
-except json.decoder.JSONDecodeError:
+except json.decoder.JSONDecodeError as error:
     # If the file is empty then just re-create an empty json file
-    child_database_file_read.seek(0)
+    # Otherwise, notify the user and exit the program
+    child_database_file_read = open(child_database_filename, "r", encoding="utf8")
     file_is_empty = child_database_file_read.read(1) == ""
     if file_is_empty:
         child_database = []
     else:
-       print(color_wrap("Child database is invalid!", COLOR_RED))
-       # TODO: Exit the program
-       child_database = []
+        print(color_wrap("Child database is invalid!", COLOR_RED))
+        print(color_wrap(f"Error while parsing JSON: {error}", COLOR_RED))
+        sys.exit(10)
 
 print("Welcome to the Christmas Naughty or Nice tool!")
 print()

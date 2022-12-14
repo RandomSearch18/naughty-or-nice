@@ -1,8 +1,14 @@
+from io import TextIOWrapper
 import json
 import random
 from menu import create_menu, color_wrap, COLOR_RED
 import sys
 import inputs
+
+# Filename constants
+FILE_CHILD_DATABASE = "children.json"
+FILE_NAUGHTY_LIST = "naughty_list.txt"
+FILE_NICE_LIST = "nice_list.txt"
 
 
 def generate_id(bits=64):
@@ -16,17 +22,34 @@ def create_child(name: str, score: int, postcode: str, id: str):
 
 def save_json():
     data = json.dumps(child_database)
-    child_database_file = open(child_database_filename, "w", encoding="utf8")
+    child_database_file = open(FILE_CHILD_DATABASE, "w", encoding="utf8")
     child_database_file.write(data)
     child_database_file.close()
 
 
-def write_naughty_and_nice_lists():
-    naughty_list_file = open("naughty_list.txt", "w", encoding="utf8")
-    nice_list_file = open("nice_list.txt", "w", encoding="utf8")
+def add_child_to_naughty_or_nice_list(
+    child,
+    naughty_file=open(FILE_NAUGHTY_LIST, "a"),
+    nice_file=open(FILE_NICE_LIST, "a"),
+):
+    line = f"\"{child['name']}\" @ {child['postcode']}"
+    is_nice = child["score"] >= 0
+    file = nice_file if is_nice else naughty_file
+    file.write(line + "\n")
+    return file
 
+
+def rewrite_naughty_and_nice_lists():
+    naughty_list_file = open(FILE_NAUGHTY_LIST, "w", encoding="utf8")
+    nice_list_file = open(FILE_NICE_LIST, "w", encoding="utf8")
+
+    total_children = 0
     for child in child_database:
-        pass
+        add_child_to_naughty_or_nice_list(child, naughty_list_file, nice_list_file)
+        total_children += 1
+
+    print(f"Added {total_children} child(ren) to the naughty/nice lists")
+    print()
 
 
 def register_new_child():
@@ -43,14 +66,16 @@ def register_new_child():
     child = ask_for_data()
     child_database.append(child)
     save_json()
-    print(f"Added a child called {child['name']}")
+    name = child["name"]
+    print(f"Added a child called {name}")
+    output_file = add_child_to_naughty_or_nice_list(child)
+    print(f'Added "{name}" to {output_file.name}')
     print()
 
 
-child_database_filename = "children.json"
 # Load the JSON database file:
 try:
-    child_database_file_read = open(child_database_filename, "r", encoding="utf8")
+    child_database_file_read = open(FILE_CHILD_DATABASE, "r", encoding="utf8")
     child_database: list = json.load(child_database_file_read)
     child_database_file_read.close()
 except FileNotFoundError:
@@ -58,7 +83,7 @@ except FileNotFoundError:
 except json.decoder.JSONDecodeError as error:
     # If the file is empty then just re-create an empty json file
     # Otherwise, notify the user and exit the program
-    child_database_file_read = open(child_database_filename, "r", encoding="utf8")
+    child_database_file_read = open(FILE_CHILD_DATABASE, "r", encoding="utf8")
     file_is_empty = child_database_file_read.read(1) == ""
     if file_is_empty:
         child_database = []
@@ -73,6 +98,7 @@ print()
 # Main menu
 add_option, show_menu = create_menu("Christmas Naughty or Nice")
 add_option("Add a child", register_new_child)
+add_option("Update naughty/nice lists", rewrite_naughty_and_nice_lists)
 show_menu()
 
 # Program shutdown

@@ -302,6 +302,11 @@ def add_street_rule(rule, street_rule):
     return full_rule
 
 
+def allow_none(rule):
+    rule["allow_none"] = True
+    return rule
+
+
 postcode_rules = {
     "AF": rule_numbers(4),
     "AX": [rule_numbers(5), rule_country_code_prefix(rule_numbers(5), sep="-")],
@@ -335,6 +340,36 @@ postcode_rules = {
     "BR": rule_single("BIQQ 1ZZ"),
     "IO": rule_single("BBND 1ZZ"),
     "VG": rule_country_code_prefix(rule_numbers(4)),
+    "KH": rule_single("120000"),
+    "CM": None,
+    # The letters D, F, I, O, Q, and U are not used to avoid confusion with other letters or numbers.
+    "CA": rule("[A-Z][0-9][A-Z] [0-9][A-Z][0-9]"),
+    "CV": rule_numbers(4),
+    "KY": rule_split(
+        rule_country_code_prefix(rule_numbers(1)), rule_numbers(4), join="-"
+    ),
+    "CF": None,
+    "TD": None,
+    "CL": [rule_numbers(7), rule_split(rule_numbers(3), rule_numbers(4), join="-")],
+    # Macau and Hong Kong don't have postcodes
+    "CN": allow_none(rule_numbers(6)),
+    "CX": rule_numbers(4),
+    "CC": rule_numbers(4),
+    "CO": rule_numbers(6),
+    "KM": None,
+    "CG": None,
+    "CD": None,
+    "CK": None,
+    "CR": add_street_rule(
+        rule_numbers(5), rule_split(rule_numbers(5), rule_numbers(4), join="-")
+    ),
+    "CI": None,
+    "HR": rule_numbers(5),
+    # The letters CP ("codigo postal") are frequently used before the postal code.
+    "CU": rule_numbers(5),
+    "CW": None,
+    "CY": rule_numbers(4),
+    "CZ": rule_split(rule_numbers(3), rule_numbers(2), join=" "),
 }
 
 

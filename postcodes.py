@@ -274,13 +274,25 @@ def rule_country_code():
     return {"area": {"type": "country_code"}}
 
 
+def rule_prefix(base_rule, prefix, prefix_length, sep):
+    return {
+        "area": {
+            "type": "prefixed",
+            "prefix_length": prefix_length,
+            "prefix": prefix["area"],
+            "main": base_rule["area"],
+            "sep": sep,
+        }
+    }
+
+
 def rule_country_code_prefix(rule, sep=""):
     return {
         "area": {
             "type": "prefixed",
             "prefix_length": 2,
             "prefix": rule_country_code()["area"],
-            "main": rule,
+            "main": rule["area"],
             "sep": sep,
         }
     }
@@ -345,8 +357,11 @@ postcode_rules = {
     # The letters D, F, I, O, Q, and U are not used to avoid confusion with other letters or numbers.
     "CA": rule("[A-Z][0-9][A-Z] [0-9][A-Z][0-9]"),
     "CV": rule_numbers(4),
-    "KY": rule_split(
-        rule_country_code_prefix(rule_numbers(1)), rule_numbers(4), join="-"
+    "KY": rule_prefix(
+        prefix=rule_country_code_prefix(rule_numbers(1)),
+        prefix_length=3,
+        sep="",
+        base_rule=rule_numbers(4),
     ),
     "CF": None,
     "TD": None,
@@ -422,9 +437,59 @@ def assert_valid_iso_code(code: str):
         raise ValueError(f"Not an officially-assigned country code: {code}")
 
 
+def get_valid_postcode_types(country: str):
+    assert_valid_iso_code(country)
+
+    if not normalised_rules[country]:
+        # Postcode rules/info are not (yet) available for this country
+        return None
+
+    ruleset = normalised_rules[country]
+    valid_types = []
+
+    if ruleset["area"]:
+        valid_types.append("area")
+    if ruleset["street"]:
+        valid_types.append("street")
+
+    return valid_types
+
+
 # https://en.wikipedia.org/wiki/List_of_postal_codes
-def assert_valid_postcode(country: str, postcode: str):
+def assert_valid_postcode(country: str, postcode: str, type: str = "area"):
+    """
+    Return codes:
+    200 - Valid postcode!
+    401 - Country does not use postcodes at all (area and street rules are empty lists)
+    402 - Country does not have postcodes in the specified area (rule is an empty list)
+    501 - Country not supported (no available postcode rules)
+    502 - Postcode rule not supported (rule type didn't match any if statements)
+    """
     if not postcode:
         raise ValueError("Provided postcode is empty!")
 
     assert_valid_iso_code(country)
+
+    rules = normalised_rules
+    if not rules[country]:
+        return 501
+
+    country_rule = rules[country]
+    if not country_rule["area"] and not country_rule["street"]:
+        return 401
+    if not country_rule[type]:
+        return 402
+
+    rule = country_rule[type]
+    rule_type = rule["type"]
+
+    # Single-value rules
+    if rule_type == "single":
+        required_code = rule["code"]
+        if postcode == required_code:
+            return
+        raise ValueError(
+            f"Country {country} only has a single postcode ({required_code}), but something else was provided: {postcode}"
+        )
+
+    return 502

@@ -63,7 +63,7 @@ def rewrite_naughty_and_nice_lists():
 def register_new_child():
     def ask_for_data():
         name = inputs.text("Name: ")
-        postcode = inputs.text("Postcode: ")  # TODO: Use postcode input helper
+        postcode = inputs.postcode("Postcode: ", "AI")
         score = inputs.integer("Total score: ")
 
         id = generate_id()

@@ -1,3 +1,4 @@
+from util import print_error
 from postcodes import assert_valid_postcode, get_valid_postcode_types
 
 
@@ -34,20 +35,27 @@ def text(prompt: str, default=None) -> str:
 
 def postcode(prompt: str, country: str):
     """Asks the user to input a valid postcode"""
-    use_validation = True
 
+    # `None` if postcode validation isn't supported for the country:
     valid_postcode_types = get_valid_postcode_types(country)
-    if valid_postcode_types == None:
-        use_validation = False
     if valid_postcode_types == []:
         raise ValueError("Country {country} does not use postcodes!")
 
-    if use_validation and "street" in valid_postcode_types:
-        pass
+    if valid_postcode_types and "area" not in valid_postcode_types:
+        print("Warning: Only street-level postcodes are currently supported.")
+        valid_postcode_types = None
 
-    # raw_input = input(prompt).strip().upper()
-    # assert_valid_postcode(country, raw_input)
-    return "TEST POSTCODE"
+    output_postcode = None
+    while not output_postcode:
+        raw_input = input(prompt).strip().upper()
+        try:
+            assert_valid_postcode(country, raw_input)
+            output_postcode = raw_input
+        except ValueError as error:
+            message = "\n".join(error.args)
+            print_error(message)
+
+    return output_postcode
 
 
 def integer(prompt: str) -> int:

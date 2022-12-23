@@ -1,14 +1,5 @@
 from inspect import signature
-
-# Terminal colour codes
-COLOR_RED = "\x1b[31m"
-COLOR_GREEN = "\x1b[32m"
-
-"""Applies an ANSI colour code to a string"""
-
-
-def color_wrap(string, color):
-    return f"{color}{string}\033[0m"
+from util import COLOR_RED, color_wrap
 
 
 def get_selection(max):

@@ -1,27 +1,13 @@
-from io import TextIOWrapper
-import json
-import random
-from menu import create_menu, color_wrap, COLOR_RED, COLOR_GREEN
 import sys
+import json
+from util import color_wrap, COLOR_RED, COLOR_GREEN, generate_id, print_success
 import inputs
+from menu import create_menu
 
 # Filename constants
 FILE_CHILD_DATABASE = "children.json"
 FILE_NAUGHTY_LIST = "naughty_list.txt"
 FILE_NICE_LIST = "nice_list.txt"
-
-
-def print_error(*msg):
-    print(color_wrap(" ".join(msg), COLOR_RED))
-
-
-def print_success(*msg):
-    print(color_wrap(" ".join(msg), COLOR_GREEN))
-
-
-def generate_id(bits=64):
-    random_int = random.randint(0, 2**bits)
-    return hex(random_int)
 
 
 def create_child(name: str, score: int, postcode: str, id: str):

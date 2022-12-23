@@ -455,6 +455,35 @@ def get_valid_postcode_types(country: str):
     return valid_types
 
 
+def assert_postcode_matches_rule(postcode, rule):
+    rule_type = rule["type"]
+
+    # Single-value rules
+    if rule_type == "single":
+        required_code = rule["code"]
+        if postcode == required_code:
+            return
+        raise ValueError(
+            f"Country {country} only has a single postcode ({required_code}), but something else was provided: {postcode}"
+        )
+
+    raise NotImplementedError(rule_type)
+
+
+def check_rules(postcode, rules):
+    """Takes a postcode and list of rules to validate it against.
+    If it doesn't match any of the rules, returns the error from each rule in a list."""
+    errors = []
+    for rule in rules:
+        try:
+            assert_postcode_matches_rule(postcode, rule)
+            return  # Success
+        except ValueError as error:
+            error = error.args[0]
+            errors.append(error)
+    return errors
+
+
 # https://en.wikipedia.org/wiki/List_of_postal_codes
 def assert_valid_postcode(country: str, postcode: str, type: str = "area"):
     """
@@ -480,16 +509,21 @@ def assert_valid_postcode(country: str, postcode: str, type: str = "area"):
     if not country_rule[type]:
         return 402
 
-    rule = country_rule[type]
-    rule_type = rule["type"]
+    rules = country_rule[type]
 
-    # Single-value rules
-    if rule_type == "single":
-        required_code = rule["code"]
-        if postcode == required_code:
-            return
-        raise ValueError(
-            f"Country {country} only has a single postcode ({required_code}), but something else was provided: {postcode}"
-        )
+    try:
+        errors = check_rules(postcode, rules)
+    except NotImplementedError:
+        return 502
 
-    return 502
+    postcode_is_valid = not isinstance(errors, list)
+    if not postcode_is_valid:
+        if not errors:
+            raise ValueError("Invalid postcode! Failed to get details of the error.")
+        if len(errors) == 1:
+            raise ValueError(errors[0])
+
+        message = f"Postcode doesn't match any of the {len(errors)} formats:"
+        for error in errors:
+            message += f"\n - {error}"
+        raise ValueError(message)

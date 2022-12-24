@@ -52,6 +52,7 @@ def rewrite_naughty_and_nice_lists():
         total_children += 1
 
     print_success(f"Added {total_children} child(ren) to the naughty/nice lists")
+    add_to_history(f"Updated the naughty/nice lists")
 
 
 def register_new_child():
@@ -69,16 +70,17 @@ def register_new_child():
     child_database.append(child)
     save_json()
     name = child["name"]
-    print_success(f"Added a child called {name}")
+    print_success(f'New child registered: "{name}"')
     output_file = add_child_to_naughty_or_nice_list(child)
-    print_success(f'Added "{name}" to {output_file.name}')
+    print_success(f"Added the child to {output_file.name}")
+    add_to_history(f"Registered a child ({name})")
 
 
 def add_to_history(event: str):
     history.append({"time": datetime.now(), "event": event})
 
 
-def print_history(max_lines=6):
+def print_history(max_lines=9):
     recent_events = history[-max_lines:]
 
     extra_lines = len(history) - max_lines
@@ -97,7 +99,7 @@ def print_history(max_lines=6):
 
 def view_history():
     print_history()
-    add_to_history("History was viewed")
+    add_to_history("Viewed the history")
 
 
 # Keeps track of all the actions that the user has taken in this session
@@ -106,9 +108,9 @@ history = []
 
 # Load the JSON database file:
 try:
-    child_database_file_read = open(FILE_CHILD_DATABASE, "r", encoding="utf8")
-    child_database: list = json.load(child_database_file_read)
-    child_database_file_read.close()
+    database_file = open(FILE_CHILD_DATABASE, "r", encoding="utf8")
+    child_database: list = json.load(database_file)
+    database_file.close()
     add_to_history("Program launched")
 except FileNotFoundError:
     child_database = []
@@ -116,10 +118,11 @@ except FileNotFoundError:
 except json.decoder.JSONDecodeError as error:
     # If the file is empty then just re-create an empty json file
     # Otherwise, notify the user and exit the program
-    child_database_file_read = open(FILE_CHILD_DATABASE, "r", encoding="utf8")
-    file_is_empty = child_database_file_read.read(1) == ""
+    database_file = open(FILE_CHILD_DATABASE, "r", encoding="utf8")
+    file_is_empty = database_file.read(1) == ""
     if file_is_empty:
         child_database = []
+        add_to_history("Program launched with an empty database file")
     else:
         print(print_error("Child database is invalid!"))
         print(print_error(f"Error while parsing JSON: {error}"))
@@ -128,7 +131,7 @@ except json.decoder.JSONDecodeError as error:
 # Main menu
 main_menu_title = color_wrap("Christmas Naughty or Nice".upper(), COLOR_BOLD)
 add_option, show_menu = create_menu(main_menu_title)
-add_option("Add a child", register_new_child)
+add_option("Register a new child", register_new_child)
 add_option("Update naughty/nice lists", rewrite_naughty_and_nice_lists)
 add_option("View history", view_history)
 show_menu(loop=True, sep="\n")

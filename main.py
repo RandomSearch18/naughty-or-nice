@@ -4,6 +4,7 @@ from datetime import datetime
 from util import (
     COLOR_BOLD,
     COLOR_GRAY,
+    COLOR_ITALIC,
     color_wrap,
     generate_id,
     print_error,
@@ -77,10 +78,14 @@ def add_to_history(event: str):
     history.append({"time": datetime.now(), "event": event})
 
 
-def print_history(max_events=5):
-    recent_events = history[-max_events:]
-    if len(history) > max_events:
-        print("...")
+def print_history(max_lines=6):
+    recent_events = history[-max_lines:]
+
+    extra_lines = len(history) - max_lines
+    if extra_lines > 0:
+        print(color_wrap(f"+{extra_lines} older event(s)", COLOR_ITALIC))
+        # Since the "..." takes up one line, we show one less item:
+        recent_events.pop(0)
 
     for item in recent_events:
         time: datetime = item["time"]

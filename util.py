@@ -4,6 +4,8 @@ import random
 # Terminal colour codes
 COLOR_RED = "\x1b[31m"
 COLOR_GREEN = "\x1b[32m"
+COLOR_CYAN = "\x1b[36m"
+COLOR_BOLD = "\x1b[1m"
 
 
 def color_wrap(string, color):
@@ -11,12 +13,26 @@ def color_wrap(string, color):
     return f"{color}{string}\033[0m"
 
 
-def print_error(*msg):
-    print(color_wrap(" ".join(msg), COLOR_RED))
+def print_colored(message_parts: tuple[str], *colors: str, icon: str = ""):
+    message = " ".join(message_parts)
+    color_string = "".join(colors)
+    print(color_wrap(icon + message, color_string))
 
 
-def print_success(*msg):
-    print(color_wrap(" ".join(msg), COLOR_GREEN))
+def print_abort(*msg: str):
+    print_colored(msg, COLOR_RED, COLOR_BOLD)
+
+
+def print_error(*msg: str):
+    print_colored(msg, COLOR_RED)
+
+
+def print_success(*msg: str):
+    print_colored(msg, COLOR_GREEN)
+
+
+def print_info(*msg: str):
+    print_colored(msg, COLOR_CYAN, icon="🛈  ")
 
 
 def generate_id(bits=64):

@@ -1,6 +1,13 @@
 import sys
 import json
-from util import color_wrap, COLOR_RED, COLOR_GREEN, generate_id, print_success
+from util import (
+    COLOR_BOLD,
+    color_wrap,
+    COLOR_RED,
+    generate_id,
+    print_error,
+    print_success,
+)
 import inputs
 from menu import create_menu
 
@@ -82,18 +89,16 @@ except json.decoder.JSONDecodeError as error:
     if file_is_empty:
         child_database = []
     else:
-        print(color_wrap("Child database is invalid!", COLOR_RED))
-        print(color_wrap(f"Error while parsing JSON: {error}", COLOR_RED))
+        print(print_error("Child database is invalid!"))
+        print(print_error(f"Error while parsing JSON: {error}"))
         sys.exit(10)
 
-print("Welcome to the Christmas Naughty or Nice tool!")
-print()
-
 # Main menu
-add_option, show_menu = create_menu("Christmas Naughty or Nice")
+main_menu_title = color_wrap("Christmas Naughty or Nice".upper(), COLOR_BOLD)
+add_option, show_menu = create_menu(main_menu_title)
 add_option("Add a child", register_new_child)
 add_option("Update naughty/nice lists", rewrite_naughty_and_nice_lists)
-show_menu()
+show_menu(loop=True, sep="\n")
 
 # Program shutdown
 print("Goodbye!")

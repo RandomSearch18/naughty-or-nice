@@ -1,24 +1,28 @@
 from inspect import signature
-from util import COLOR_RED, color_wrap
+from util import COLOR_RED, print_abort, print_error
 
 
 def get_selection(max):
     try:
         raw_input = input("Make a selection: ")
     except KeyboardInterrupt:
-        print(color_wrap("Selection cancelled!", COLOR_RED))
+        print_abort("Selection cancelled!", COLOR_RED)
         return -1
 
+    if raw_input == "":
+        print_error("Enter a number, or enter 0 to exit.")
+        return get_selection(max)
+
     if not raw_input.isnumeric():
-        print("Your selection must be a positive number!")
+        print_error("Your selection must be a positive number!")
         return get_selection(max)
 
     selection = int(raw_input)
     if selection < 0:
-        print("Select a positive number!")
+        print_error("Select a positive number!")
         return get_selection(max)
     if selection > max:
-        print("Selection out of bounds: Must be below", max)
+        print_error(f"Selection out of bounds: must be below {max + 1}")
         return get_selection(max)
 
     # Subtract one from the selection, since the user is given options that are
@@ -44,7 +48,7 @@ def create_menu(title=None):
 
     """Show the menu (once you've added all the options)"""
 
-    def show_menu(loop=False):
+    def show_menu(loop=False, sep="\n\n"):
         """Cleanup functions run once the menu item callback is done, i.e. if the function ends normally or if it's cancelled by the user with ^C. Useful for things like closing files."""
 
         def add_cleanup(cleanup):
@@ -83,14 +87,14 @@ def create_menu(title=None):
             callback() if parameters == 0 else callback(add_cleanup)
         except KeyboardInterrupt:
             message = "Aborting..." if len(cleanups) else "Aborted!"
-            print(color_wrap("\n" + message, COLOR_RED))
+            print_abort("\n" + message)
         finally:
             for cleanup in cleanups:
                 cleanup()
 
         if not loop:
             return
-        print("\n")
+        print(sep, end="")
         show_menu(loop)
 
     return add_option, show_menu

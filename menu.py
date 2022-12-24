@@ -95,6 +95,6 @@ def create_menu(title=None):
         if not loop:
             return
         print(sep, end="")
-        show_menu(loop)
+        show_menu(loop, sep)
 
     return add_option, show_menu

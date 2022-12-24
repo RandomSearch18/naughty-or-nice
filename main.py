@@ -1,9 +1,10 @@
 import sys
 import json
+from datetime import datetime
 from util import (
     COLOR_BOLD,
+    COLOR_GRAY,
     color_wrap,
-    COLOR_RED,
     generate_id,
     print_error,
     print_success,
@@ -50,7 +51,6 @@ def rewrite_naughty_and_nice_lists():
         total_children += 1
 
     print_success(f"Added {total_children} child(ren) to the naughty/nice lists")
-    print()
 
 
 def register_new_child():
@@ -71,7 +71,32 @@ def register_new_child():
     print_success(f"Added a child called {name}")
     output_file = add_child_to_naughty_or_nice_list(child)
     print_success(f'Added "{name}" to {output_file.name}')
-    print()
+
+
+def add_to_history(event: str):
+    history.append({"time": datetime.now(), "event": event})
+
+
+def print_history(max_events=5):
+    recent_events = history[-max_events:]
+    if len(history) > max_events:
+        print("...")
+
+    for item in recent_events:
+        time: datetime = item["time"]
+        event: str = item["event"]
+
+        time_string = color_wrap(f"[{time.strftime('%X')}]", COLOR_GRAY)
+        print(time_string, event)
+
+
+def view_history():
+    print_history()
+    add_to_history("History was viewed")
+
+
+# Keeps track of all the actions that the user has taken in this session
+history = []
 
 
 # Load the JSON database file:
@@ -79,8 +104,10 @@ try:
     child_database_file_read = open(FILE_CHILD_DATABASE, "r", encoding="utf8")
     child_database: list = json.load(child_database_file_read)
     child_database_file_read.close()
+    add_to_history("Program launched")
 except FileNotFoundError:
     child_database = []
+    add_to_history("Program launched for the first time")
 except json.decoder.JSONDecodeError as error:
     # If the file is empty then just re-create an empty json file
     # Otherwise, notify the user and exit the program
@@ -98,6 +125,7 @@ main_menu_title = color_wrap("Christmas Naughty or Nice".upper(), COLOR_BOLD)
 add_option, show_menu = create_menu(main_menu_title)
 add_option("Add a child", register_new_child)
 add_option("Update naughty/nice lists", rewrite_naughty_and_nice_lists)
+add_option("View history", view_history)
 show_menu(loop=True, sep="\n")
 
 # Program shutdown

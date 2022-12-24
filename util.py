@@ -5,6 +5,7 @@ import random
 COLOR_RED = "\x1b[31m"
 COLOR_GREEN = "\x1b[32m"
 COLOR_CYAN = "\x1b[36m"
+COLOR_GRAY = "\x1b[90m"
 COLOR_BOLD = "\x1b[1m"
 
 

@@ -464,7 +464,7 @@ def assert_postcode_matches_rule(postcode, rule):
         if postcode == required_code:
             return
         raise ValueError(
-            f"Country {country} only has a single postcode ({required_code}), but something else was provided: {postcode}"
+            f"The country only has a single postcode ({required_code}), but something else was provided: {postcode}"
         )
 
     raise NotImplementedError(rule_type)

@@ -49,7 +49,21 @@ def postcode(prompt: str, country: str):
     while not output_postcode:
         raw_input = input(prompt).strip().upper()
         try:
-            assert_valid_postcode(country, raw_input)
+            result = assert_valid_postcode(country, raw_input)
+            if result == 200:
+                pass  # Validation was performed successfully
+
+            elif result == 501:
+                print(f"Warning: Postcode validation for {country} is not available.")
+
+            elif result == 502:
+                print(
+                    f"Warning: Skipped validation because one of the postcode rules for {country} were not understood."
+                )
+
+            else:
+                print_error(f"Skipped postcode validation due to an error ({result})")
+
             output_postcode = raw_input
         except ValueError as error:
             message = "\n".join(error.args)

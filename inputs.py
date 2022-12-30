@@ -36,20 +36,10 @@ def text(prompt: str, default=None) -> str:
 def postcode(prompt: str, country: str):
     """Asks the user to input a valid postcode"""
 
-    # `None` if postcode validation isn't supported for the country:
-    valid_postcode_types = get_valid_postcode_types(country)
-    if valid_postcode_types == []:
-        raise ValueError("Country {country} does not use postcodes!")
-
-    if valid_postcode_types and "area" not in valid_postcode_types:
-        print("Warning: Only street-level postcodes are currently supported.")
-        valid_postcode_types = None
-
-    output_postcode = None
-    while not output_postcode:
+    def get_valid_postcode(type: str) -> str:
         raw_input = input(prompt).strip().upper()
         try:
-            result = assert_valid_postcode(country, raw_input)
+            result = assert_valid_postcode(country, raw_input, type)
             if result == 200:
                 pass  # Validation was performed successfully
 
@@ -64,10 +54,22 @@ def postcode(prompt: str, country: str):
             else:
                 print_error(f"Skipped postcode validation due to an error ({result})")
 
-            output_postcode = raw_input
+            return raw_input
         except ValueError as error:
             message = "\n".join(error.args)
             print_error(message)
+            return get_valid_postcode(type)
+
+    # `None` if postcode validation isn't supported for the country:
+    valid_postcode_types = get_valid_postcode_types(country)
+    if valid_postcode_types == []:
+        raise ValueError("Country {country} does not use postcodes!")
+
+    if valid_postcode_types and "area" not in valid_postcode_types:
+        print("Warning: Only area-level postcodes are currently supported.")
+        valid_postcode_types = None
+
+    output_postcode = get_valid_postcode("area")
 
     return output_postcode
 

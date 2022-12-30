@@ -177,7 +177,7 @@ def assert_valid_iso_code(code: str):
 
     if not re.search("^[A-Z]{2}$", code):
         raise ValueError(
-            f"ISO 3166-1 alpha-2 country codes can only contain two uppercase letters: {code}"
+            f'ISO 3166-1 alpha-2 country codes can only contain two uppercase letters, but "{code}" was provided.'
         )
 
     if not countries.get(alpha_2=code):

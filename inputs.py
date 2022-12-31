@@ -1,7 +1,12 @@
+from pycountry import countries
 import re
 from typing import Callable, Union
-from util import COLOR_YELLOW, color_wrap, print_error
-from postcodes import assert_valid_postcode, get_valid_postcode_types
+from util import COLOR_YELLOW, color_wrap, print_error, print_gray
+from postcodes import (
+    assert_valid_iso_code,
+    assert_valid_postcode,
+    get_valid_postcode_types,
+)
 
 
 def is_int(string: str):
@@ -147,8 +152,49 @@ def house_number_maybe(prompt: str):
     return raw_input
 
 
+def iso_country(prompt: str):
+    raw_input = text(prompt)
+
+    # If it's in the format of an ISO country code, treat it as one
+    iso_code_format = re.match("^[A-Z]{2}$", raw_input.upper())
+    if iso_code_format:
+        raw_input = raw_input.upper()
+        try:
+            assert_valid_iso_code(raw_input)
+            return raw_input
+        except ValueError:
+            print_error("That's not a valid ISO country code!")
+            return iso_country(prompt)
+
+    # Otherwise, treat it as a country name and try to resolve it to an ISO code
+    try:
+        results = countries.search_fuzzy(raw_input)
+    except LookupError:
+        print_error(f'Couldn\'t find any countries matching "{raw_input}".')
+        return iso_country(prompt)
+
+    country = results[0]
+    unsure = len(results) > 1
+
+    if unsure:
+        confirmed = yes_no(
+            color_wrap(f"Matched to {country.name}. Correct?", COLOR_YELLOW)
+        )
+        if confirmed:
+            return country.alpha_2
+        # If the user states that the selected country is incorrect,
+        # show them the other matches and let them retry entering a country.
+        print_gray("Other possible matches:")
+        for country in results:
+            print_gray(f" - {country.alpha_2}: {country.name}")
+        return iso_country(prompt)
+
+    print_gray(f"Selected country: {country.name} ({country.alpha_2})")
+    return country.alpha_2
+
+
 def address() -> dict[str, Union[str, None]]:
-    country = text("Country: ")  # TODO: Validate countries
+    country = iso_country("Country: ")  # TODO: Validate countries
     city = input("City: ") or None
     street = input("Street: ") or None
     place = ask_if(not street, "Place: ", helper=text)

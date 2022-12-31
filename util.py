@@ -39,6 +39,10 @@ def print_info(*msg: str):
     print_colored(msg, COLOR_CYAN, icon="🛈  ")
 
 
+def print_gray(*msg: str):
+    print_colored(msg, COLOR_GRAY)
+
+
 def generate_id(bits=64):
     random_int = random.randint(0, 2**bits)
     return hex(random_int)

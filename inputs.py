@@ -56,7 +56,7 @@ def text(prompt: str, default=None) -> str:
     if default != None and raw_input == "":
         return default
     if not raw_input:
-        print("Enter at least one character!")
+        print_error("Enter at least one character!")
         return text(prompt)
     return raw_input
 
@@ -118,10 +118,10 @@ def integer(prompt: str) -> int:
     raw_input = text(prompt).strip()
 
     if not is_number(raw_input):
-        print("You must enter a number!")
+        print_error("You must enter a number!")
         return integer(prompt)
     if not is_int(raw_input):
-        print("You must enter an integer! (No decimal places)")
+        print_error("You must enter an integer! (No decimal places)")
         return integer(prompt)
 
     return int(raw_input)

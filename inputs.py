@@ -33,10 +33,15 @@ def text(prompt: str, default=None) -> str:
     return raw_input
 
 
-def postcode(prompt: str, country: str):
+def postcode(
+    country: str,
+    base_prompt="Postcode: ",
+    area_prompt="Area postcode: ",
+    street_prompt="Street-level postcode: ",
+):
     """Asks the user to input a valid postcode"""
 
-    def get_valid_postcode(type: str) -> str:
+    def get_valid_postcode(type: str, prompt) -> str:
         raw_input = input(prompt).strip().upper()
         try:
             result = assert_valid_postcode(country, raw_input, type)
@@ -58,20 +63,27 @@ def postcode(prompt: str, country: str):
         except ValueError as error:
             message = "\n".join(error.args)
             print_error(message)
-            return get_valid_postcode(type)
+            return get_valid_postcode(type, prompt)
 
-    # `None` if postcode validation isn't supported for the country:
     valid_postcode_types = get_valid_postcode_types(country)
     if valid_postcode_types == []:
         raise ValueError("Country {country} does not use postcodes!")
 
-    if valid_postcode_types and "area" not in valid_postcode_types:
-        print("Warning: Only area-level postcodes are currently supported.")
-        valid_postcode_types = None
+    if not valid_postcode_types:
+        # Validation isn't supported for the country, so just treat it as a text input
+        return text(base_prompt)
 
-    output_postcode = get_valid_postcode("area")
+    if len(valid_postcode_types) == 1:
+        # The country only uses one type of postcode, so just ask for a "postcode"
+        valid_type = valid_postcode_types[0]
+        return get_valid_postcode(valid_type, base_prompt)
 
-    return output_postcode
+    # The country uses both area and street-level postcodes,
+    # so both need to be entered to get a full postcode.
+    area_postcode = get_valid_postcode("area", area_prompt)
+    street_postcode = get_valid_postcode("street", street_prompt)
+
+    return " ".join([area_postcode, street_postcode])
 
 
 def integer(prompt: str) -> int:

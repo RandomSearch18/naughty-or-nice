@@ -6,6 +6,7 @@ COLOR_RED = "\x1b[31m"
 COLOR_GREEN = "\x1b[32m"
 COLOR_CYAN = "\x1b[36m"
 COLOR_GRAY = "\x1b[90m"
+COLOR_YELLOW = "\x1b[33m"
 
 COLOR_BOLD = "\x1b[1m"
 COLOR_ITALIC = "\x1b[3m"

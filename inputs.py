@@ -1,5 +1,6 @@
+import re
 from typing import Callable, Union
-from util import print_error
+from util import COLOR_YELLOW, color_wrap, print_error
 from postcodes import assert_valid_postcode, get_valid_postcode_types
 
 
@@ -30,7 +31,7 @@ def ask_if(condition, prompt, default=None, helper: Callable[[str], str] = input
     return helper(prompt) or default
 
 
-def yes_no(prompt: str, default: str = "") -> bool:
+def yes_no(prompt: str, default="y") -> bool:
     separator = "/"
     options = ["y", "n"]
 
@@ -127,12 +128,31 @@ def integer(prompt: str) -> int:
     return int(raw_input)
 
 
+def house_number_maybe(prompt: str):
+    raw_input = input(prompt).strip()
+    if raw_input == "":
+        return None
+
+    has_digit = re.search("\\d", raw_input)
+    is_long = len(raw_input) >= 3
+    if not has_digit and is_long:
+        confirmed = yes_no(
+            color_wrap(
+                "Are you sure that this is a house number, not a house name?",
+                COLOR_YELLOW,
+            )
+        )
+        return raw_input if confirmed else house_number_maybe(prompt)
+
+    return raw_input
+
+
 def address() -> dict[str, Union[str, None]]:
     country = text("Country: ")  # TODO: Validate countries
     city = input("City: ") or None
     street = input("Street: ") or None
     place = ask_if(not street, "Place: ", helper=text)
-    house_number = input("House number: ") or None
+    house_number = house_number_maybe("House number: ")
     house_name = input("House name: ") or None
 
     use_detail = yes_no("Add sub-building detail?", default="n")

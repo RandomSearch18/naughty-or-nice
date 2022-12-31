@@ -10,7 +10,11 @@ import re
 
 
 def rule(regex: str):
-    return {"area": {"type": "regex", "regex": f"^{regex}$", "raw_regex": regex}}
+    return rule_raw_regex(f"^{regex}$", regex)
+
+
+def rule_raw_regex(regex: str, raw_regex=None):
+    return {"area": {"type": "regex", "regex": regex, "raw_regex": raw_regex or regex}}
 
 
 def rule_single(code: str):
@@ -57,7 +61,22 @@ def rule_split(*parts, join=" "):
 
 
 def add_street_rule(rule, street_rule):
-    full_rule = {"street": street_rule["area"], "area": rule and rule["area"]}
+    if isinstance(rule, list):
+        # Extract the street rule from each rule in the list
+        rule = [rule["area"] for rule in rule]
+    elif not rule:
+        pass  # Don't try to normalise rules that are are None
+    else:
+        rule = rule["area"]
+
+    if isinstance(street_rule, list):
+        street_rule = [rule["area"] for rule in street_rule]
+    elif not street_rule:
+        pass
+    else:
+        street_rule = street_rule["area"]
+
+    full_rule = {"street": street_rule, "area": rule and rule}
     return full_rule
 
 
@@ -77,7 +96,9 @@ postcode_rules = {
     "AI": rule_single("AI-2640"),
     "AG": None,
     # Doesn't check for valid provinces:
-    "AR": add_street_rule(rule_numbers(4), rule("^\\d{4}|[A-Z]\\d{4}[a-zA-Z]{3}$")),
+    "AR": add_street_rule(
+        rule_numbers(4), [rule_numbers(4), rule("[A-Z]\\d{4}[a-zA-Z]{3}")]
+    ),
     "AM": rule_numbers(4),
     "AW": None,
     "AU": rule_numbers(4),
@@ -90,7 +111,7 @@ postcode_rules = {
     "BZ": None,
     "BJ": None,
     # Bermuda is weird:
-    "BM": add_street_rule(None, rule("\\d{4}|[A-Z]\\d{4}[a-zA-Z]{3}")),
+    "BM": add_street_rule(None, [rule_numbers(4), rule("[A-Z]\\d{4}[a-zA-Z]{3}")]),
     "BT": rule_numbers(5),
     "BO": None,
     "BQ": None,
@@ -212,6 +233,15 @@ def assert_postcode_matches_rule(postcode, rule):
             return
         raise ValueError(
             f"The country only has a single postcode ({required_code}), but something else was provided: {postcode}"
+        )
+
+    # Regex rules
+    if rule_type == "regex":
+        expression = rule["regex"]
+        if re.search(expression, postcode):
+            return
+        raise ValueError(
+            f"That postcode doesn't match the expected format. Regexp: {rule['raw_regex']}"
         )
 
     raise NotImplementedError(rule_type)

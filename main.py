@@ -58,7 +58,7 @@ def rewrite_naughty_and_nice_lists():
 def register_new_child():
     def ask_for_data():
         name = inputs.text("Name: ")
-        postcode = inputs.postcode("AR")
+        postcode = inputs.postcode("BM")
         score = inputs.integer("Total score: ")
 
         id = generate_id()

@@ -110,8 +110,7 @@ postcode_rules = {
     "BD": rule_numbers(4),
     "BZ": None,
     "BJ": None,
-    # Bermuda is weird:
-    "BM": add_street_rule(None, [rule_numbers(4), rule("[A-Z]\\d{4}[a-zA-Z]{3}")]),
+    "BM": add_street_rule(None, [rule("[A-Z]{2} [0-9]{2}"), rule("[A-Z]{2} [A-Z]{2}")]),
     "BT": rule_numbers(5),
     "BO": None,
     "BQ": None,

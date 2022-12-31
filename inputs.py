@@ -196,7 +196,7 @@ def address() -> dict[str, Union[str, None]]:
     country = iso_country("Country: ")  # TODO: Validate countries
     city = input("City: ") or None
     street = input("Street: ") or None
-    place = ask_if(not street, "Place: ", helper=text)
+    place = ask_if(not street, "Place: ")
     house_number = house_number_maybe("House number: ")
     house_name = input("House name: ") or None
 

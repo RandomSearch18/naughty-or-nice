@@ -108,6 +108,9 @@ postcode_rules = {
     # Valid range is 101..1216:
     "BH": [rule_numbers(3), rule_numbers(4)],
     "BD": rule_numbers(4),
+    "BB": rule_country_code_prefix(rule_numbers(5), sep=""),
+    "BY": rule_numbers(6),
+    "BE": rule_numbers(4),
     "BZ": None,
     "BJ": None,
     "BM": add_street_rule(None, [rule("[A-Z]{2} [0-9]{2}"), rule("[A-Z]{2} [A-Z]{2}")]),

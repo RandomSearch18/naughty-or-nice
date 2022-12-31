@@ -139,8 +139,7 @@ def house_number_maybe(prompt: str):
         return None
 
     has_digit = re.search("\\d", raw_input)
-    is_long = len(raw_input) >= 5
-    if not has_digit or is_long:
+    if not has_digit:
         confirmed = yes_no(
             color_wrap(
                 "Are you sure that this is a house number, not a house name?",

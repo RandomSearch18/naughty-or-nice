@@ -65,7 +65,7 @@ def register_new_child():
     def ask_for_data():
         name = inputs.text("Name: ")
         address = inputs.address()
-        postcode = inputs.postcode("BM")
+        postcode = inputs.postcode(address["country"])  # type:ignore
         score = inputs.integer("Total score: ")
 
         id = generate_id()

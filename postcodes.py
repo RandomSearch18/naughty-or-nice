@@ -207,7 +207,7 @@ def assert_valid_iso_code(code: str):
 def get_valid_postcode_types(country: str):
     assert_valid_iso_code(country)
 
-    if not normalised_rules[country]:
+    if country not in normalised_rules:
         # Postcode rules/info are not (yet) available for this country
         return None
 

@@ -1,3 +1,4 @@
+from typing import Callable, Union
 from util import print_error
 from postcodes import assert_valid_postcode, get_valid_postcode_types
 
@@ -20,6 +21,33 @@ def is_float(string: str):
 
 def is_number(string: str):
     return is_int(string) or is_float(string)
+
+
+def ask_if(condition, prompt, default=None, helper: Callable[[str], str] = input):
+    if not condition:
+        return default
+
+    return helper(prompt) or default
+
+
+def yes_no(prompt: str, default: str = "") -> bool:
+    separator = "/"
+    options = ["y", "n"]
+
+    formatted_options = [
+        option.upper() if option == default else option.lower() for option in options
+    ]
+    hint = f"({separator.join(formatted_options)})"
+
+    full_prompt = f"{prompt} {hint} "
+    raw_input = input(full_prompt).lower().strip()
+    if raw_input == "":
+        return default == "y"
+
+    if raw_input not in options:
+        return yes_no(prompt, default)
+
+    return raw_input == "y"
 
 
 def text(prompt: str, default=None) -> str:
@@ -97,3 +125,31 @@ def integer(prompt: str) -> int:
         return integer(prompt)
 
     return int(raw_input)
+
+
+def address() -> dict[str, Union[str, None]]:
+    country = text("Country: ")  # TODO: Validate countries
+    city = input("City: ") or None
+    street = input("Street: ") or None
+    place = ask_if(not street, "Place: ", helper=text)
+    house_number = input("House number: ") or None
+    house_name = input("House name: ") or None
+
+    use_detail = yes_no("Add sub-building detail?", default="n")
+    unit = ask_if(use_detail, "Unit: ")
+    floor = ask_if(use_detail, "Floor: ")
+    chimney = ask_if(use_detail, "Chimney: ")
+    full = ask_if(use_detail, "Description: ")
+
+    return {
+        "country": country,
+        "city": city,
+        "street": street,
+        "place": place,
+        "house_number": house_number,
+        "house_name": house_name,
+        "unit": unit,
+        "floor": floor,
+        "chimney": chimney,
+        "full": full,
+    }

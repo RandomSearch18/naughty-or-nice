@@ -19,8 +19,14 @@ FILE_NAUGHTY_LIST = "naughty_list.txt"
 FILE_NICE_LIST = "nice_list.txt"
 
 
-def create_child(name: str, score: int, postcode: str, id: str):
-    return {"name": name, "score": score, "postcode": postcode, "id": id}
+def create_child(name: str, score: int, postcode: str, id: str, address):
+    return {
+        "name": name,
+        "score": score,
+        "postcode": postcode,
+        "id": id,
+        "address": address,
+    }
 
 
 def save_json():
@@ -58,11 +64,12 @@ def rewrite_naughty_and_nice_lists():
 def register_new_child():
     def ask_for_data():
         name = inputs.text("Name: ")
+        address = inputs.address()
         postcode = inputs.postcode("BM")
         score = inputs.integer("Total score: ")
 
         id = generate_id()
-        return create_child(name, score, postcode, id)
+        return create_child(name, score, postcode, id, address)
 
     print("Registering a new child")
     print("Please input their information's")

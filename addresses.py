@@ -107,3 +107,5 @@ def add_coordinates_to_child(address, child):
 
     print_gray("Found address match:")
     print_gray(result.address)
+    add_coordinates(result)
+    return 200

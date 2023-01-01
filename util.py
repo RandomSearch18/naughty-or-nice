@@ -12,6 +12,11 @@ COLOR_BOLD = "\x1b[1m"
 COLOR_ITALIC = "\x1b[3m"
 
 
+def remove_nullish_values(dict: dict):
+    # https://stackoverflow.com/a/33797147
+    return {key: value for key, value in dict.items() if value is not None}
+
+
 def color_wrap(string, color):
     """Applies an ANSI colour code to a string"""
     return f"{color}{string}\033[0m"
@@ -41,6 +46,10 @@ def print_info(*msg: str):
 
 def print_gray(*msg: str):
     print_colored(msg, COLOR_GRAY)
+
+
+def print_heading(*msg: str):
+    print_colored(msg, COLOR_BOLD)
 
 
 def generate_id(bits=64):

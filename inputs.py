@@ -133,20 +133,19 @@ def integer(prompt: str) -> int:
     return int(raw_input)
 
 
-def house_number_maybe(prompt: str):
+def house_name_maybe(prompt: str):
     raw_input = input(prompt).strip()
     if raw_input == "":
         return None
 
-    has_digit = re.search("\\d", raw_input)
-    if not has_digit:
+    if is_int(raw_input):
         confirmed = yes_no(
             color_wrap(
-                "Are you sure that this is a house number, not a house name?",
+                "This looks like a house number. Keep it?",
                 COLOR_YELLOW,
             )
         )
-        return raw_input if confirmed else house_number_maybe(prompt)
+        return raw_input if confirmed else house_name_maybe(prompt)
 
     return raw_input
 
@@ -185,6 +184,7 @@ def iso_country(prompt: str):
         # show them the other matches and let them retry entering a country.
         print_gray("Other possible matches:")
         for country in results:
+            # TODO: Limit to ~10 results
             print_gray(f" - {country.alpha_2}: {country.name}")
         return iso_country(prompt)
 
@@ -193,12 +193,12 @@ def iso_country(prompt: str):
 
 
 def address() -> dict[str, Union[str, None]]:
-    country = iso_country("Country: ")  # TODO: Validate countries
+    country = iso_country("Country: ")
     city = input("City: ") or None
     street = input("Street: ") or None
     place = ask_if(not street, "Place: ")
-    house_number = house_number_maybe("House number: ")
-    house_name = input("House name: ") or None
+    house_number = input("House number: ") or None
+    house_name = house_name_maybe("House name: ")
 
     use_detail = yes_no("Add sub-building detail?", default="n")
     unit = ask_if(use_detail, "Unit: ")

@@ -1,13 +1,14 @@
 import sys
 import json
 from datetime import datetime
+from addresses import add_coordinates_to_child
 from util import (
-    COLOR_BOLD,
     COLOR_GRAY,
     COLOR_ITALIC,
     color_wrap,
     generate_id,
     print_error,
+    print_heading,
     print_success,
 )
 import inputs
@@ -69,7 +70,9 @@ def register_new_child():
         score = inputs.integer("Total score: ")
 
         id = generate_id()
-        return create_child(name, score, postcode, id, address)
+        child = create_child(name, score, postcode, id, address)
+        add_coordinates_to_child(address, child)
+        return child
 
     print("Registering a new child")
     print("Please input their information's")
@@ -109,6 +112,15 @@ def view_history():
     add_to_history("Viewed the history")
 
 
+def view_about():
+    print_heading("Credits")
+    print("Geocoding of child addresses provided by https://nominatim.org/")
+    print(
+        "Nominatim geocoding uses OpenStreetMap data: https://openstreetmap.org/copyright"
+    )
+    add_to_history("Viewed the credits")
+
+
 # Keeps track of all the actions that the user has taken in this session
 history = []
 
@@ -136,11 +148,13 @@ except json.decoder.JSONDecodeError as error:
         sys.exit(10)
 
 # Main menu
-main_menu_title = color_wrap("Christmas Naughty or Nice".upper(), COLOR_BOLD)
+program_mane = "Christmas Naughty or Nice"
+main_menu_title = print_heading(program_mane.upper())
 add_option, show_menu = create_menu(main_menu_title)
 add_option("Register a new child", register_new_child)
 add_option("Update naughty/nice lists", rewrite_naughty_and_nice_lists)
 add_option("View history", view_history)
+add_option(f"About {program_mane}", view_about)
 show_menu(loop=True, sep="\n")
 
 # Program shutdown

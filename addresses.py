@@ -66,7 +66,7 @@ def add_coordinates_to_child(address, child):
 
     def ask_to_edit_address():
         if not yes_no("Do you want to edit the address?"):
-            return
+            return False
         new_address = address_input()
         child["address"] = new_address
         return add_coordinates_to_child(new_address, child)
@@ -78,12 +78,16 @@ def add_coordinates_to_child(address, child):
 
     if not result:
         print_gray("Looking up the following address:")
-        print_gray(f'  {address["street"]},')
-        print_gray(f'  {address["city"]},')
+        if address["street"]:
+            print_gray(f'  {address["street"]},')
+        if address["city"]:
+            print_gray(f'  {address["city"]},')
         print_gray(f'  Country: {address["country"]}')
         print_error("Address lookup failed! (No results)")
 
-        ask_to_edit_address()
+        edited_address = ask_to_edit_address()
+        if edited_address:
+            return edited_address
 
         if yes_no("Do you want to use the postcode to get coordinates?"):
             postcode_result = geocode_postcode(child["postcode"])
@@ -101,7 +105,9 @@ def add_coordinates_to_child(address, child):
 
         print("Still couldn't look up the address!")
         print("You can register the child without an address, or edit the address.")
-        ask_to_edit_address()
+        edited_address = ask_to_edit_address()
+        if edited_address:
+            return edited_address
 
         return
 

@@ -14,6 +14,13 @@ def get_child(id: str):
     raise LookupError(f"Couldn't find a child with ID {id}")
 
 
+def child_exists(id: str):
+    for child in child_database:
+        if child["id"] == id:
+            return True
+    return False
+
+
 child_database: list = []
 
 try:

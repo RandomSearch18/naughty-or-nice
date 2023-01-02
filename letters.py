@@ -2,7 +2,14 @@ from addresses import address_to_text
 from constants import FOLDER_LETTERS
 from inputs import yes_no
 from menu import create_menu
-from util import COLOR_BOLD, color_wrap, print_gray, print_success, print_warning
+from util import (
+    COLOR_BOLD,
+    clear_folder,
+    color_wrap,
+    print_gray,
+    print_success,
+    print_warning,
+)
 from child_database import child_database, get_child
 from pathlib import Path
 import inputs
@@ -82,9 +89,10 @@ def select_range():
 
 
 def save_to_folder():
-    # TODO: Handle files that already exist in the folder
     output_folder = Path(FOLDER_LETTERS)
+    # Make sure that we start with an empty folder that definitely exists:
     output_folder.mkdir(parents=True, exist_ok=True)
+    clear_folder(output_folder)
     letters = generate_letters()
     for id in letters:
         letter = letters[id]

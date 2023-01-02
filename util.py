@@ -1,4 +1,6 @@
+from pathlib import Path
 import random
+from typing import Union
 
 
 # Terminal colour codes
@@ -59,3 +61,9 @@ def print_heading(*msg: str):
 def generate_id(bits=64):
     random_int = random.randint(0, 2**bits)
     return hex(random_int)
+
+
+def clear_folder(path: Union[str, Path]):
+    for item in Path(path).iterdir():
+        if item.is_file():
+            item.unlink()

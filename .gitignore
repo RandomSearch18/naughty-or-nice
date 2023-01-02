@@ -4,3 +4,6 @@ __pycache__
 *.json
 *.txt
 letters/
+
+# Temporary file used for development/debugging
+rules.js

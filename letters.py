@@ -3,8 +3,6 @@ from menu import create_menu
 from util import COLOR_BOLD, color_wrap, print_gray
 import inputs
 
-LETTERS_FOLDER = "letters"
-
 # By default, send a letter
 # to kids from one to ninety-two
 # (zero-indexed)
@@ -21,6 +19,10 @@ def range_string():
     start_text = f"#{range_start + 1}"
     end_text = "the end" if range_length == -1 else f"#{range_end + 1}"
     return f"{start_text} to {end_text}"
+
+
+def generate_letters():
+    2
 
 
 def select_range():
@@ -43,6 +45,10 @@ def select_range():
     return
 
 
+def save_to_folder():
+    2
+
+
 def personalised_letters():
     add_option, show_menu = create_menu(color_wrap("Personalised Letters", COLOR_BOLD))
     add_option(
@@ -50,5 +56,5 @@ def personalised_letters():
         select_range,
         loop_after=True,
     )
-    # add_option("Export letters to a folder", save_to_folder)
+    add_option("Export letters to a folder", save_to_folder)
     show_menu(sep="\n")

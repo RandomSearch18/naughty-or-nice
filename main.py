@@ -1,14 +1,18 @@
 from io import TextIOWrapper
 import sys
 import json
-from datetime import datetime
 from typing import Optional
 from addresses import add_coordinates_to_child
+from constants import (
+    FILE_CHILD_DATABASE,
+    FILE_NAUGHTY_LIST,
+    FILE_NICE_LIST,
+    PROGRAM_NAME,
+)
+from history import add_to_history, print_history
 from letters import personalised_letters
 from util import (
     COLOR_BOLD,
-    COLOR_GRAY,
-    COLOR_ITALIC,
     color_wrap,
     generate_id,
     print_error,
@@ -17,11 +21,7 @@ from util import (
 )
 import inputs
 from menu import create_menu
-
-# Filename constants
-FILE_CHILD_DATABASE = "children.json"
-FILE_NAUGHTY_LIST = "naughty_list.txt"
-FILE_NICE_LIST = "nice_list.txt"
+from child_database import child_database
 
 
 def create_child(name: str, score: int, postcode: str, id: str, address):
@@ -41,13 +41,9 @@ def save_json():
     child_database_file.close()
 
 
-def add_child_to_naughty_or_nice_list(
-    child,
-    naughty_file: Optional[TextIOWrapper] = None,
-    nice_file: Optional[TextIOWrapper] = None,
-):
-    naughty_file = naughty_file or open(FILE_NAUGHTY_LIST, "a")
-    nice_file = nice_file or open(FILE_NICE_LIST, "a")
+def add_child_to_naughty_or_nice_list(child):
+    naughty_file = open(FILE_NAUGHTY_LIST, "a")
+    nice_file = open(FILE_NICE_LIST, "a")
 
     line = f"\"{child['name']}\" @ {child['postcode']}"
     is_nice = child["score"] >= 0
@@ -58,12 +54,13 @@ def add_child_to_naughty_or_nice_list(
 
 
 def rewrite_naughty_and_nice_lists():
-    naughty_list_file = open(FILE_NAUGHTY_LIST, "w", encoding="utf8")
-    nice_list_file = open(FILE_NICE_LIST, "w", encoding="utf8")
+    # Clear both of the files
+    for filename in [FILE_NICE_LIST, FILE_NAUGHTY_LIST]:
+        open(filename, "w", encoding="utf8").close()
 
     total_children = 0
     for child in child_database:
-        add_child_to_naughty_or_nice_list(child, naughty_list_file, nice_list_file)
+        add_child_to_naughty_or_nice_list(child)
         total_children += 1
 
     print_success(f"Added {total_children} child(ren) to the naughty/nice lists")
@@ -94,27 +91,6 @@ def register_new_child():
     add_to_history(f"Registered a child ({name})")
 
 
-def add_to_history(event: str):
-    history.append({"time": datetime.now(), "event": event})
-
-
-def print_history(max_lines=9):
-    recent_events = history[-max_lines:]
-
-    extra_lines = len(history) - max_lines
-    if extra_lines > 0:
-        print(color_wrap(f"+{extra_lines} older event(s)", COLOR_ITALIC))
-        # Since the "..." takes up one line, we show one less item:
-        recent_events.pop(0)
-
-    for item in recent_events:
-        time: datetime = item["time"]
-        event: str = item["event"]
-
-        time_string = color_wrap(f"[{time.strftime('%X')}]", COLOR_GRAY)
-        print(time_string, event)
-
-
 def view_history():
     print_history()
     add_to_history("Viewed the history")
@@ -127,10 +103,6 @@ def view_about():
         "Nominatim geocoding uses OpenStreetMap data: https://openstreetmap.org/copyright"
     )
     add_to_history("Viewed the credits")
-
-
-# Keeps track of all the actions that the user has taken in this session
-history = []
 
 
 # Load the JSON database file:
@@ -156,13 +128,12 @@ except json.decoder.JSONDecodeError as error:
         sys.exit(10)
 
 # Main menu
-program_mane = "Christmas Naughty or Nice"
-add_option, show_menu = create_menu(color_wrap(program_mane.upper(), COLOR_BOLD))
+add_option, show_menu = create_menu(color_wrap(PROGRAM_NAME.upper(), COLOR_BOLD))
 add_option("Register a new child", register_new_child)
 add_option("Update naughty/nice lists", rewrite_naughty_and_nice_lists)
 add_option("Write personalised letters", personalised_letters)
 add_option("View history", view_history)
-add_option(f"About {program_mane}", view_about)
+add_option(f"About {PROGRAM_NAME}", view_about)
 show_menu(loop=True, sep="\n")
 
 # Program shutdown

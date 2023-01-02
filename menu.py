@@ -37,21 +37,22 @@ def get_selection(max):
 def create_menu(title=None):
     options = []
 
-    """Add an option to the menu.
-    name: The text that is shown to the user, in the menu
-    callback: The function to run when the user selects the option
-    show: An optional function that can return False to prevent the option from being shown
-    """
-
-    def add_option(name, callback, show=None):
-        options.append({"name": name, "callback": callback, "show": show})
-
-    """Show the menu (once you've added all the options)"""
+    def add_option(name, callback, show=None, loop_after=False):
+        """Add an option to the menu.
+        name: The text that is shown to the user, in the menu
+        callback: The function to run when the user selects the option
+        show: An optional function that can return False to prevent the option from being shown
+        loopAfter: Set to True to always return back to the menu after the callback is finished
+        """
+        options.append(
+            {"name": name, "callback": callback, "show": show, "loop_after": loop_after}
+        )
 
     def show_menu(loop=False, sep="\n\n"):
-        """Cleanup functions run once the menu item callback is done, i.e. if the function ends normally or if it's cancelled by the user with ^C. Useful for things like closing files."""
+        """Show the menu (once you've added all the options)"""
 
         def add_cleanup(cleanup):
+            """Cleanup functions run once the menu item callback is done, i.e. if the function ends normally or if it's cancelled by the user with ^C. Useful for things like closing files."""
             cleanups.append(cleanup)
 
         cleanups = []
@@ -81,6 +82,7 @@ def create_menu(title=None):
 
         print()
         callback = relevant_options[selection]["callback"]
+        loop_after = relevant_options[selection]["loop_after"]
         try:
             # Only give the callback function an argument if it wants one
             parameters = len(signature(callback).parameters)
@@ -92,7 +94,7 @@ def create_menu(title=None):
             for cleanup in cleanups:
                 cleanup()
 
-        if not loop:
+        if not loop and not loop_after:
             return
         print(sep, end="")
         show_menu(loop, sep)

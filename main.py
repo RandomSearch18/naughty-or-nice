@@ -3,6 +3,7 @@ import json
 from datetime import datetime
 from addresses import add_coordinates_to_child
 from util import (
+    COLOR_BOLD,
     COLOR_GRAY,
     COLOR_ITALIC,
     color_wrap,
@@ -46,6 +47,7 @@ def add_child_to_naughty_or_nice_list(
     is_nice = child["score"] >= 0
     file = nice_file if is_nice else naughty_file
     file.write(line + "\n")
+    file.close()
     return file
 
 
@@ -149,8 +151,7 @@ except json.decoder.JSONDecodeError as error:
 
 # Main menu
 program_mane = "Christmas Naughty or Nice"
-main_menu_title = print_heading(program_mane.upper())
-add_option, show_menu = create_menu(main_menu_title)
+add_option, show_menu = create_menu(color_wrap(program_mane.upper(), COLOR_BOLD))
 add_option("Register a new child", register_new_child)
 add_option("Update naughty/nice lists", rewrite_naughty_and_nice_lists)
 add_option("View history", view_history)

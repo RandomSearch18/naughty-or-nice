@@ -3,6 +3,7 @@
 from typing import Any, Optional
 from geopy.geocoders import Nominatim
 from inputs import yes_no, address as address_input
+from pycountry import countries
 
 from util import print_error, print_gray, remove_nullish_values
 
@@ -122,3 +123,45 @@ def add_coordinates_to_child(address, child):
 
     add_coordinates(result)
     return 200
+
+
+def address_to_text(address, postcode=""):
+    parts = []
+
+    # SUB-BUILDING ADDRESS LINES
+    if address["full"]:
+        parts.append(address["full"])
+    if address["chimney"]:
+        parts.append(f'Chimney {address["chimney"]}')
+    if address["floor"]:
+        parts.append(f'Floor {address["floor"]}')
+    if address["unit"]:
+        parts.append(f'Unit {address["unit"]}')
+
+    # STREET-LEVEL ADDRESS LINES
+    # House names go on their own line, but house numbers go next to the road name
+    if address["house_name"]:
+        parts.append(address["house_name"])
+        if address["street"]:
+            parts.append(address["street"])
+    elif address["house_number"]:
+        # Only use the house number if there isn't a house name
+        house_line = address["house_number"]
+        if address["street"]:
+            house_line += " " + address["street"]
+        elif address["place"]:
+            house_line += " " + address["place"]
+        parts.append(house_line)
+
+    # REGIONAL/NATIONAL ADDRESS LINES
+    if address["city"]:
+        parts.append(address["city"])
+    if postcode:
+        parts.append(postcode)
+
+    try:
+        country = countries.get(alpha_2=address["country"])
+        parts.append(country.name.upper())
+    except:
+        # Just in case countries.get() fails for some reason
+        parts.append(address["country"])

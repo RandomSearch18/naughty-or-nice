@@ -1,8 +1,10 @@
+from addresses import address_to_text
 from inputs import yes_no
 from menu import create_menu
-from util import COLOR_BOLD, color_wrap, print_gray, print_warning
+from util import COLOR_BOLD, color_wrap, print_gray, print_success, print_warning
 from child_database import child_database
 import inputs
+import time
 
 # By default, send a letter
 # to kids from one to ninety-two
@@ -23,7 +25,32 @@ def range_string():
 
 
 def generate_letters():
-    2
+    # If we need a return address: https://www.wikidata.org/wiki/Q25409136
+    letters = {}
+    total_letters = 0
+    start_time = time.time()
+    for child in child_database:
+        if "address" not in child:
+            continue
+
+        letter_text = f"""\
+        {address_to_text(child["address"])}
+        
+        Dear {child["name"]},
+        I am writing to inform you that you have been classed as a naughty child this
+        year, which has prevented you from receiving any presents. To continue to receive
+        Christmas presents, you need to behave well in the upcoming year.
+
+        Yours sincerely,
+        Santa Claus"""
+
+        # Use the child's ID as the key in `letters`
+        letters[child["id"]] = letter_text
+        total_letters += 1
+
+    time_elapsed = time.time() - start_time
+    print_success(f"Generated {total_letters} letters in {time_elapsed:.2f} seconds")
+    return letters
 
 
 def select_range():
@@ -53,7 +80,7 @@ def select_range():
 
 
 def save_to_folder():
-    2
+    generate_letters()
 
 
 def personalised_letters():

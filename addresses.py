@@ -62,6 +62,7 @@ def add_coordinates_to_child(address, child):
     """Return codes:
     200 - Geocoding succeeded and coordinates have been added.
     301 - Added coordinates from postcode
+    302 - Added coordinates from city
     """
 
     def ask_to_edit_address():
@@ -96,16 +97,22 @@ def add_coordinates_to_child(address, child):
             if postcode_result:
                 add_coordinates(postcode_result)
                 return 301
-            print_error(f"Couldn't look up the postcode {child['postcode']}!")
+            print_error(f"Couldn't find the postcode {child['postcode']}!")
 
         if address["street"]:
             print(
                 f"You can ignore the child's street and just use the city ({address['city']}) to get coordinates. This may be useful in poorly-mapped areas."
             )
             if yes_no("Get coordinates from the city?", default="n"):
-                pass  # TODO
+                city_result = geolocator.geocode(
+                    {"city": address["city"], "country": address["country"]}
+                )
+                if city_result:
+                    add_coordinates(city_result)
+                    return 302
+                print_error(f"Couldn't find the city {address['city']}!")
 
-        print("Still couldn't look up the address!")
+        print_error("Still couldn't find the address!")
         print("You can register the child without an address, or edit the address.")
         edited_address = ask_to_edit_address()
         if edited_address:

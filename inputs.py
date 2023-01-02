@@ -161,7 +161,9 @@ def iso_country(prompt: str):
             assert_valid_iso_code(raw_input)
             return raw_input
         except ValueError:
-            print_error("That's not a valid ISO country code!")
+            print_error(
+                "Please enter a country name or a valid two-letter country code."
+            )
             return iso_country(prompt)
 
     # Otherwise, treat it as a country name and try to resolve it to an ISO code

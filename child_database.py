@@ -4,6 +4,16 @@ from constants import FILE_CHILD_DATABASE
 from history import add_to_history
 from util import print_error
 
+
+def get_child(id: str):
+    # Linear search FTW
+    for child in child_database:
+        if child["id"] == id:
+            return child
+
+    raise LookupError(f"Couldn't find a child with ID {id}")
+
+
 child_database: list = []
 
 try:

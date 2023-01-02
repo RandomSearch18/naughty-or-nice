@@ -1,6 +1,7 @@
 from inputs import yes_no
 from menu import create_menu
-from util import COLOR_BOLD, color_wrap, print_gray
+from util import COLOR_BOLD, color_wrap, print_gray, print_warning
+from child_database import child_database
 import inputs
 
 # By default, send a letter
@@ -17,7 +18,7 @@ def range_string():
         return "All children"
 
     start_text = f"#{range_start + 1}"
-    end_text = "the end" if range_length == -1 else f"#{range_end + 1}"
+    end_text = "the end" if range_length == -1 else f"#{range_end}"
     return f"{start_text} to {end_text}"
 
 
@@ -26,22 +27,28 @@ def generate_letters():
 
 
 def select_range():
-    global range_start, range_end
+    global range_start, range_length
     print_gray(f"Current range: {range_string()}")
     if yes_no("Include all children?", default="n"):
         range_start = 0
-        range_end = -1
+        range_length = -1
         return
 
     start = inputs.positive_integer("Start at child #") - 1
-    if yes_no(f"Include children from #{start} to the end of the list?", default="n"):
+    if yes_no(f"Include children from #{start+1} to the end of the list?", default="n"):
         range_start = start
-        range_end = -1
+        range_length = -1
         return
 
-    end = inputs.positive_integer("End at child #")
+    total_children = len(child_database)
+    length = inputs.positive_integer("Number of children to include: ")
+    excess_children = (start + length) - total_children
+    if excess_children > 0:
+        print_warning(
+            f"Note: There are currently only {total_children} registered children, so {length - excess_children} letters will be produced."
+        )
     range_start = start
-    range_end = end
+    range_length = length
     return
 
 
@@ -52,7 +59,7 @@ def save_to_folder():
 def personalised_letters():
     add_option, show_menu = create_menu(color_wrap("Personalised Letters", COLOR_BOLD))
     add_option(
-        f"Change the range of children ({range_string()})",
+        f"Change the range of children",
         select_range,
         loop_after=True,
     )

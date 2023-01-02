@@ -36,6 +36,10 @@ def print_error(*msg: str):
     print_colored(msg, COLOR_RED)
 
 
+def print_warning(*msg: str):
+    print_colored(msg, COLOR_YELLOW)
+
+
 def print_success(*msg: str):
     print_colored(msg, COLOR_GREEN)
 

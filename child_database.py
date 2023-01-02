@@ -4,16 +4,14 @@ from constants import FILE_CHILD_DATABASE
 from history import add_to_history
 from util import print_error
 
-print("!!!!!!!!!!!")
-child_database = []
+child_database: list = []
 
 try:
     database_file = open(FILE_CHILD_DATABASE, "r", encoding="utf8")
-    child_database: list = json.load(database_file)
+    child_database = json.load(database_file)
     database_file.close()
     add_to_history("Program launched")
 except FileNotFoundError:
-    child_database = []
     add_to_history("Program launched for the first time")
 except json.decoder.JSONDecodeError as error:
     # If the file is empty then just re-create an empty json file
@@ -21,7 +19,6 @@ except json.decoder.JSONDecodeError as error:
     database_file = open(FILE_CHILD_DATABASE, "r", encoding="utf8")
     file_is_empty = database_file.read(1) == ""
     if file_is_empty:
-        child_database = []
         add_to_history("Program launched with an empty database file")
     else:
         print(print_error("Child database is invalid!"))

@@ -1,7 +1,5 @@
-from io import TextIOWrapper
 import sys
 import json
-from typing import Optional
 from addresses import add_coordinates_to_child
 from constants import (
     FILE_CHILD_DATABASE,

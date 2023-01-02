@@ -133,6 +133,16 @@ def integer(prompt: str) -> int:
     return int(raw_input)
 
 
+def positive_integer(prompt: str) -> int:
+    inputted = integer(prompt)
+
+    if inputted <= 0:
+        print_error("You must enter a positive number!")
+        return integer(prompt)
+
+    return inputted
+
+
 def house_name_maybe(prompt: str):
     raw_input = input(prompt).strip()
     if raw_input == "":

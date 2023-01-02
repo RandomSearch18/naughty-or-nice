@@ -4,6 +4,7 @@ import json
 from datetime import datetime
 from typing import Optional
 from addresses import add_coordinates_to_child
+from letters import personalised_letters
 from util import (
     COLOR_BOLD,
     COLOR_GRAY,
@@ -159,6 +160,7 @@ program_mane = "Christmas Naughty or Nice"
 add_option, show_menu = create_menu(color_wrap(program_mane.upper(), COLOR_BOLD))
 add_option("Register a new child", register_new_child)
 add_option("Update naughty/nice lists", rewrite_naughty_and_nice_lists)
+add_option("Write personalised letters", personalised_letters)
 add_option("View history", view_history)
 add_option(f"About {program_mane}", view_about)
 show_menu(loop=True, sep="\n")

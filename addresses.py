@@ -45,8 +45,8 @@ def geocode_address(address) -> Optional[Any]:
     )
 
 
-def geocode_postcode(postcode) -> Optional[Any]:
-    return geolocator.geocode({"postalcode": postcode})
+def geocode_postcode(postcode, country) -> Optional[Any]:
+    return geolocator.geocode({"postalcode": postcode, "country": country})
 
 
 def coordinates_from_address(address):
@@ -72,6 +72,8 @@ def add_coordinates_to_child(address, child):
         return add_coordinates_to_child(new_address, child)
 
     def add_coordinates(location):
+        print_gray("Found address match:")
+        print_gray(location.address)
         child["coordinates"] = [location.latitude, location.longitude]
 
     result = geocode_address(address)
@@ -90,7 +92,7 @@ def add_coordinates_to_child(address, child):
             return edited_address
 
         if yes_no("Do you want to use the postcode to get coordinates?"):
-            postcode_result = geocode_postcode(child["postcode"])
+            postcode_result = geocode_postcode(child["postcode"], address["country"])
             if postcode_result:
                 add_coordinates(postcode_result)
                 return 301
@@ -111,7 +113,5 @@ def add_coordinates_to_child(address, child):
 
         return
 
-    print_gray("Found address match:")
-    print_gray(result.address)
     add_coordinates(result)
     return 200

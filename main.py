@@ -1,6 +1,8 @@
+from io import TextIOWrapper
 import sys
 import json
 from datetime import datetime
+from typing import Optional
 from addresses import add_coordinates_to_child
 from util import (
     COLOR_BOLD,
@@ -40,9 +42,12 @@ def save_json():
 
 def add_child_to_naughty_or_nice_list(
     child,
-    naughty_file=open(FILE_NAUGHTY_LIST, "a"),
-    nice_file=open(FILE_NICE_LIST, "a"),
+    naughty_file: Optional[TextIOWrapper] = None,
+    nice_file: Optional[TextIOWrapper] = None,
 ):
+    naughty_file = naughty_file or open(FILE_NAUGHTY_LIST, "a")
+    nice_file = nice_file or open(FILE_NICE_LIST, "a")
+
     line = f"\"{child['name']}\" @ {child['postcode']}"
     is_nice = child["score"] >= 0
     file = nice_file if is_nice else naughty_file

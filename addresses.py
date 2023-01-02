@@ -165,3 +165,5 @@ def address_to_text(address, postcode=""):
     except:
         # Just in case countries.get() fails for some reason
         parts.append(address["country"])
+
+    return ",\n".join(parts)

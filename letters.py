@@ -34,22 +34,22 @@ def generate_letters():
             continue
 
         letter_text = f"""\
-        {address_to_text(child["address"])}
-        
-        Dear {child["name"]},
-        I am writing to inform you that you have been classed as a naughty child this
-        year, which has prevented you from receiving any presents. To continue to receive
-        Christmas presents, you need to behave well in the upcoming year.
+{address_to_text(child["address"])}
 
-        Yours sincerely,
-        Santa Claus"""
+Dear {child["name"]},
+I am writing to inform you that you have been classed as a naughty child this
+year, which has prevented you from receiving any presents. To continue to receive
+Christmas presents, you need to behave well in the upcoming year.
+
+Yours sincerely,
+Santa Claus"""
 
         # Use the child's ID as the key in `letters`
         letters[child["id"]] = letter_text
         total_letters += 1
 
     time_elapsed = time.time() - start_time
-    print_success(f"Generated {total_letters} letters in {time_elapsed:.2f} seconds")
+    print_success(f"Generated {total_letters} letter(s) in {time_elapsed:.2f} seconds")
     return letters
 
 
@@ -80,7 +80,9 @@ def select_range():
 
 
 def save_to_folder():
-    generate_letters()
+    letters = generate_letters()
+    for id in letters:
+        print(letters[id])
 
 
 def personalised_letters():
